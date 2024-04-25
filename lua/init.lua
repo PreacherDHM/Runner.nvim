@@ -3,6 +3,7 @@ local M = {}
 local runners = {}
 local last_command = ''
 local commandIndex = 1
+M.use_preCommand = false
 M.precommand = 'start cmd.exe /k '
 
 local findfile = function(name)
@@ -58,6 +59,16 @@ local get_runner_config = function()
 				runner.commands = commands
 				commandIndex = commandIndex + 1
 			end
+			if pre == "PRE" then
+				if sufx == 'true' then
+					M.use_preCommand = true
+				else
+					M.use_preCommand = false
+				end
+				print(sufx)
+			else
+				M.use_preCommand = false
+			end 
 		end
 	end
 	table.insert(runners,i, runner)
@@ -76,6 +87,7 @@ M.setup = function(m)
 	if m.precommand ~= nil then
 		M.precommand = m.precommand
 	end
+	M.use_preCommand = false
 
 	vim.api.nvim_create_user_command('RunnerCreate', function()
 		if findfile("runner.run") == false then
@@ -131,6 +143,7 @@ M.setup = function(m)
 
 
 	vim.api.nvim_create_user_command('Runner', function() 
+
 		if findfile("runner.run") == true then
 
 			get_runner_config()
@@ -139,7 +152,7 @@ M.setup = function(m)
 				vim.ui.input({prompt = 'Runner: :'}, function(i) last_command = i end)
 				last_command = ':' .. last_command
 			end
-			print("last command:"..last_command)
+			print("\nlast command:"..last_command)
 			local command = ''
 			table.foreach(runners, function(t)
 
@@ -151,8 +164,12 @@ M.setup = function(m)
 					else
 						command = ''
 					end
-					print(M.precommand .. command .. runners[t].path ..runners[t].executable .. ' ' .. runners[t].peramitors)
-					local handler = vim.fn.jobstart(M.precommand ..'"'.. command .. runners[t].path ..runners[t].executable .. ' ' .. runners[t].peramitors.. '"',{
+					local c = command .. runners[t].path ..runners[t].executable .. ' ' .. runners[t].peramitors
+					if false == true then
+						c = M.precommand .. '"' .. c .. '"'
+					end 
+					print('true')
+					local handler = vim.fn.jobstart(c,{
 						on_stdin = function(_,data,event)
 						end
 					})
