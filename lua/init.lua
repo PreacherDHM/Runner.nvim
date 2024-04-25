@@ -72,7 +72,11 @@ local get_runner_options = function()
 	{})
 end
 
-M.setup() = function() 
+M.setup = function(m) 
+	if m.precommand ~= nil then
+		M.precommand = m.precommand
+	end
+
 	vim.api.nvim_create_user_command('RunnerCreate', function()
 		if findfile("runner.run") == false then
 			--code
