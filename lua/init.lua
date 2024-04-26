@@ -124,18 +124,13 @@ M.setup = function(m)
 			table.foreach(runners, function(t)
 
 				if runners[t].funk_name == last_command then
-					
-					table.foreach(runners[t].commands, function(i)
-						command = command.. runners[t].commands[i] .. ' && '
-					end)
-					local handler = io.popen(runners[t].path ..runners[t].executable ..' '.. runners[t].peramitors)
-					local resolt = handler:read("*a")
-					handler:close()
-					print('\n'..resolt)
-					return 1
+					print('Set Runner')
+					return
 				end
 
 			end)
+			print("Could not find Runner")
+			last_command = ''
 		else
 			print("ERROR runner file dose not exist.")
 		end
