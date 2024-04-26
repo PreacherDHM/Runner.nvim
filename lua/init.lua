@@ -121,16 +121,19 @@ M.setup = function(m)
 			get_runner_options()
 			vim.ui.input({prompt = 'Runner: :'}, function(i) last_command = i end)
 			last_command = ':' .. last_command
+			local no_runner = true
 			table.foreach(runners, function(t)
 
 				if runners[t].funk_name == last_command then
 					print('Set Runner')
-					return
+					no_runner = false
 				end
 
 			end)
-			print("Could not find Runner")
-			last_command = ''
+			if no_runner == true then
+				print("Could not find Runner")
+				last_command = ''
+			end
 		else
 			print("ERROR runner file dose not exist.")
 		end
