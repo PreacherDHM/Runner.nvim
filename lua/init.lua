@@ -115,28 +115,43 @@ M.setup = function(m)
 
 
 	vim.api.nvim_create_user_command('RunnerSet', function() 
+
 		if findfile("runner.run") == true then
 
 			get_runner_config()
 			get_runner_options()
+			last_command = ''
 			vim.ui.input({prompt = 'Runner: :'}, function(i) last_command = i end)
 			last_command = ':' .. last_command
-			local no_runner = true
+			print("\nlast command:"..last_command)
+			local command = ''
 			table.foreach(runners, function(t)
 
 				if runners[t].funk_name == last_command then
-					print('Set Runner')
-					no_runner = false
+					if runners[t].commands ~= nil then
+						table.foreach(runners[t].commands, function(i)
+							command = command .. runners[t].commands[i] .. ' & '
+						end)
+					else
+						command = ''
+					end
+					local c = command .. runners[t].path ..runners[t].executable .. ' ' .. runners[t].peramitors
+					if false == true then
+						c = M.precommand .. '"' .. c .. '"'
+					end 
+					print('true')
+					local handler = vim.fn.jobstart(c,{
+						on_stdin = function(_,data,event)
+						end
+					})
+					return 1
 				end
 
 			end)
-			if no_runner == true then
-				print("Could not find Runner")
-				last_command = ''
-			end
 		else
 			print("ERROR runner file dose not exist.")
 		end
+	end,{})
 	end,{})
 
 
